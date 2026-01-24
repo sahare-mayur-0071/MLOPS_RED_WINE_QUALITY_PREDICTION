@@ -17,6 +17,7 @@ class DataValidation:
             data = pd.read_csv(self.config.unzip_data_dir)
             all_cols = list(data.columns)
             # print(f"the columns are shown below from the dataset: {all_cols}")
+            # next in future we can add more validation like datatype check, null value check etc(keep in mind)
 
             all_schema = self.config.all_schema.keys()
 
