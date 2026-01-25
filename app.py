@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from mlProject.pipeline.prediction import PredictionPipeline
 
-
+# Testing CI/CD pipeline
 app = Flask(__name__) # initializing a flask app
 
 
