@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+venv/
+.venv
+env/
+.env
+
+# Jupyter Notebooks (unnecessary for production app)
+.ipynb_checkpoints/
+research/
+
+# IDEs
+.vscode/
+.idea/
+
+# MLOps & DVC specific (cache can be massive!)
+.dvc/cache/
+.dvc/tmp/
+logs/
+
+# Docker configuration itself doesn't need to be in the image
+Dockerfile
+.dockerignore
