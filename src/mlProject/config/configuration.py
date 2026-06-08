@@ -43,11 +43,14 @@ class ConfigurationManager:
 
         create_directories([root_dir])
 
+        expected_checksum = get_env_or_config(ENV_DATA_INGESTION_EXPECTED_CHECKSUM, config.get("expected_checksum", ""))
+
         data_ingestion_config = DataIngestionConfig(
             root_dir=Path(root_dir),
             source_URL=source_URL,
             local_data_file=Path(get_env_or_config(ENV_DATA_INGESTION_LOCAL_DATA_FILE, config.local_data_file)),
-            unzip_dir=Path(get_env_or_config(ENV_DATA_INGESTION_UNZIP_DIR, config.unzip_dir))
+            unzip_dir=Path(get_env_or_config(ENV_DATA_INGESTION_UNZIP_DIR, config.unzip_dir)),
+            expected_checksum=expected_checksum
         )
 
         return data_ingestion_config

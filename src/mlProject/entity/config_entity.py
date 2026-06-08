@@ -9,6 +9,7 @@ class DataIngestionConfig:
     source_URL: str
     local_data_file: Path
     unzip_dir: Path
+    expected_checksum: str = ""
     override_root_dir: Optional[Path] = None
     override_source_URL: Optional[str] = None
 

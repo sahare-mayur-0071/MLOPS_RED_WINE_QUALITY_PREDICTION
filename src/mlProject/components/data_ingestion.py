@@ -1,8 +1,7 @@
 import os
 import urllib.request as request
-import zipfile
 from mlProject import logger
-from mlProject.utils.common import get_size
+from mlProject.utils.common import get_size, safe_extract_zip, verify_checksum
 from mlProject.entity.config_entity import DataIngestionConfig
 from pathlib import Path
 
@@ -24,6 +23,14 @@ class DataIngestion:
                 logger.info(f"{filename} download! with following info: \n{headers}")
             else:
                 logger.info(f"File already exists of size: {get_size(Path(self.config.local_data_file))}")
+
+            if not verify_checksum(
+                Path(self.config.local_data_file),
+                self.config.expected_checksum
+            ):
+                raise ValueError(
+                    f"Checksum verification failed for {self.config.local_data_file}"
+                )
         except Exception as e:
             logger.exception(f"Failed to download file from {self.config.source_URL}")
             raise
@@ -39,11 +46,9 @@ class DataIngestion:
         try:
             unzip_path = self.config.unzip_dir
             os.makedirs(unzip_path, exist_ok=True)
-            with zipfile.ZipFile(self.config.local_data_file, 'r') as zip_ref:
-                zip_ref.extractall(unzip_path)
-            logger.info(f"Extracted zip file to {unzip_path}")
-        except zipfile.BadZipFile:
-            logger.error(f"Corrupt zip file: {self.config.local_data_file}")
+            safe_extract_zip(Path(self.config.local_data_file), Path(unzip_path))
+        except ValueError as e:
+            logger.error(f"Zip Slip detected in {self.config.local_data_file}: {e}")
             raise
         except Exception as e:
             logger.exception(f"Failed to extract zip file: {self.config.local_data_file}")

@@ -1,4 +1,6 @@
 import os
+import hashlib
+import zipfile
 from box.exceptions import BoxValueError
 import yaml
 from mlProject import logger
@@ -161,3 +163,75 @@ def get_size(path: Path) -> str:
     """
     size_in_kb = round(os.path.getsize(path)/1024)
     return f"~ {size_in_kb} KB"
+
+
+@ensure_annotations
+def compute_checksum(path: Path) -> str:
+    """Compute SHA-256 checksum of a file.
+
+    Args:
+        path (Path): path to the file
+
+    Returns:
+        str: hex digest of SHA-256 hash
+    """
+    sha256 = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+
+@ensure_annotations
+def safe_extract_zip(zip_path: Path, extract_dir: Path):
+    """Extract a zip file safely, preventing Zip Slip path traversal.
+
+    Validates each member's path to ensure it does not escape the
+    target extraction directory via '..' or absolute paths.
+
+    Args:
+        zip_path (Path): path to the zip file
+        extract_dir (Path): directory to extract into
+
+    Raises:
+        ValueError: if any member path is malicious (path traversal)
+        zipfile.BadZipFile: if the zip file is corrupt
+    """
+    with zipfile.ZipFile(zip_path, 'r') as zf:
+        for member in zf.namelist():
+            member_path = Path(member)
+            if member_path.is_absolute() or ".." in member_path.parts:
+                raise ValueError(
+                    f"Zip Slip detected: member '{member}' would write "
+                    f"outside the target directory"
+                )
+        zf.extractall(extract_dir)
+    logger.info(f"Safely extracted zip to {extract_dir}")
+
+
+@ensure_annotations
+def verify_checksum(file_path: Path, expected_checksum: str) -> bool:
+    """Verify a file's SHA-256 checksum against an expected value.
+
+    Args:
+        file_path (Path): path to the file
+        expected_checksum (str): expected SHA-256 hex digest
+
+    Returns:
+        bool: True if checksum matches (or expected is empty), False otherwise
+    """
+    if not expected_checksum:
+        logger.info("No expected checksum configured - skipping verification")
+        return True
+    if not file_path.exists():
+        logger.error(f"File not found for checksum verification: {file_path}")
+        return False
+    actual = compute_checksum(file_path)
+    if actual != expected_checksum:
+        logger.error(
+            f"Checksum mismatch for {file_path}: "
+            f"expected {expected_checksum}, got {actual}"
+        )
+        return False
+    logger.info(f"Checksum verified for {file_path}")
+    return True
