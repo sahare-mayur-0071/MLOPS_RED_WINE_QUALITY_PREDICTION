@@ -130,6 +130,86 @@ class TestPreprocessing(unittest.TestCase):
             preprocessor = joblib.load(preprocessor_path)
             self.assertIsNotNone(preprocessor)
 
+    def test_build_preprocessing_pipeline_honors_feature_engineering_flags(self):
+        config = DataTransformationConfig(
+            root_dir=Path("/tmp"),
+            data_path=Path("/tmp/wine.csv"),
+            test_size=0.25,
+            random_state=42,
+            stratify_column="quality",
+            use_scaler=True,
+            scaler_type="standard",
+            handle_outliers=False,
+            impute_missing=False,
+            feature_engineering_flags={
+                "add_acidity_index": False,
+                "add_alcohol_sugar_ratio": True,
+                "add_free_sulfur_pct": False,
+            },
+        )
+        dt = DataTransformation(config)
+        pipeline = dt._build_preprocessing_pipeline()
+        fe = pipeline.named_steps["feature_engineer"]
+        self.assertFalse(fe.add_acidity_index)
+        self.assertTrue(fe.add_alcohol_sugar_ratio)
+        self.assertFalse(fe.add_free_sulfur_pct)
+
+    def test_build_preprocessing_pipeline_skips_outlier_capper_when_disabled(self):
+        config = DataTransformationConfig(
+            root_dir=Path("/tmp"),
+            data_path=Path("/tmp/wine.csv"),
+            test_size=0.25,
+            random_state=42,
+            stratify_column="quality",
+            use_scaler=True,
+            scaler_type="standard",
+            handle_outliers=False,
+            impute_missing=True,
+        )
+        dt = DataTransformation(config)
+        pipeline = dt._build_preprocessing_pipeline()
+        numeric = pipeline.named_steps["numeric"]
+        step_names = [name for name, _ in numeric.steps]
+        self.assertNotIn("outlier_capper", step_names)
+
+    def test_build_preprocessing_pipeline_skips_imputer_when_disabled(self):
+        config = DataTransformationConfig(
+            root_dir=Path("/tmp"),
+            data_path=Path("/tmp/wine.csv"),
+            test_size=0.25,
+            random_state=42,
+            stratify_column="quality",
+            use_scaler=True,
+            scaler_type="standard",
+            handle_outliers=False,
+            impute_missing=False,
+        )
+        dt = DataTransformation(config)
+        pipeline = dt._build_preprocessing_pipeline()
+        numeric = pipeline.named_steps["numeric"]
+        step_names = [name for name, _ in numeric.steps]
+        self.assertNotIn("imputer", step_names)
+
+    def test_build_preprocessing_pipeline_uses_outlier_iqr_multiplier_from_config(self):
+        config = DataTransformationConfig(
+            root_dir=Path("/tmp"),
+            data_path=Path("/tmp/wine.csv"),
+            test_size=0.25,
+            random_state=42,
+            stratify_column="quality",
+            use_scaler=True,
+            scaler_type="standard",
+            handle_outliers=True,
+            outlier_method="iqr",
+            outlier_iqr_multiplier=3.0,
+            impute_missing=False,
+        )
+        dt = DataTransformation(config)
+        pipeline = dt._build_preprocessing_pipeline()
+        numeric = pipeline.named_steps["numeric"]
+        capper = numeric.named_steps["outlier_capper"]
+        self.assertEqual(capper.iqr_multiplier, 3.0)
+
 
 if __name__ == "__main__":
     unittest.main()

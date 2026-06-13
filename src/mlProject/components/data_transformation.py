@@ -148,18 +148,25 @@ class DataTransformation:
         }
         scaler = scaler_map.get(self.config.scaler_type, StandardScaler())
 
-        numeric_transformer = Pipeline(steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", scaler),
-            ("outlier_capper", OutlierCapper(method="iqr", iqr_multiplier=1.5)),
-        ])
+        numeric_steps = []
+        if self.config.impute_missing:
+            numeric_steps.append(("imputer", SimpleImputer(strategy="median")))
+        numeric_steps.append(("scaler", scaler))
+        if self.config.handle_outliers:
+            numeric_steps.append(("outlier_capper", OutlierCapper(
+                method=self.config.outlier_method,
+                iqr_multiplier=self.config.outlier_iqr_multiplier,
+            )))
 
+        numeric_transformer = Pipeline(steps=numeric_steps)
+
+        fe_flags = self.config.feature_engineering_flags or {}
         preprocessor = Pipeline(steps=[
             ("numeric", numeric_transformer),
             ("feature_engineer", FeatureEngineer(
-                add_acidity_index=True,
-                add_alcohol_sugar_ratio=True,
-                add_free_sulfur_pct=True,
+                add_acidity_index=fe_flags.get("add_acidity_index", True),
+                add_alcohol_sugar_ratio=fe_flags.get("add_alcohol_sugar_ratio", True),
+                add_free_sulfur_pct=fe_flags.get("add_free_sulfur_pct", True),
             )),
         ])
         return preprocessor
@@ -233,10 +240,16 @@ class DataTransformation:
             logger.info(f"Preprocessing pipeline saved to {preprocessor_path}")
 
             feat_dim = len(NUMERIC_FEATURES)
-            if train_scaled.shape[1] != feat_dim + 3:
+            fe_flags = self.config.feature_engineering_flags or {}
+            num_engineered = sum([
+                fe_flags.get("add_acidity_index", True),
+                fe_flags.get("add_alcohol_sugar_ratio", True),
+                fe_flags.get("add_free_sulfur_pct", True),
+            ])
+            if train_scaled.shape[1] != feat_dim + num_engineered:
                 logger.warning(
                     f"Preprocessor output dimension {train_scaled.shape[1]} "
-                    f"does not match expected {feat_dim + 3} (features + engineered)"
+                    f"does not match expected {feat_dim + num_engineered} (features + engineered)"
                 )
         else:
             train_scaled_df = None
