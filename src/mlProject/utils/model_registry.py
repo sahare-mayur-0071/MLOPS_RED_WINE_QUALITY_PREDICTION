@@ -201,6 +201,7 @@ def get_staging_model_path(registry_path: Path) -> Optional[Path]:
 
 def rollback_to_version(registry_path: Path, version_id: str) -> bool:
     """Rollback production alias to a specific version and restore the model file."""
+    from mlProject.utils.common import save_checksum
     registry = load_registry(registry_path)
     for v in registry.get("versions", []):
         if v.get("id") == version_id:
@@ -213,6 +214,8 @@ def rollback_to_version(registry_path: Path, version_id: str) -> bool:
                 return False
             stable_path = versioned_path.parent / "model.joblib"
             shutil.copy2(str(versioned_path), str(stable_path))
+            checksum_path = Path(str(stable_path) + ".sha256")
+            save_checksum(stable_path, checksum_path)
             registry["production"] = version_id
             save_registry(registry_path, registry)
             logger.info(
