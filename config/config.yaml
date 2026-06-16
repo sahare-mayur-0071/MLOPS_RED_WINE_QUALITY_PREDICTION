@@ -34,6 +34,7 @@ data_validation:
 data_transformation:
   root_dir: artifacts/data_transformation
   data_path: artifacts/data_ingestion/winequality-red.csv
+  preprocessor_path: artifacts/data_transformation/preprocessor.joblib
 
 # Model Trainer Stage
 # Trains ElasticNet regression model with configurable hyperparameters

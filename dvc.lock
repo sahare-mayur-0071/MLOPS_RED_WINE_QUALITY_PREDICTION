@@ -116,6 +116,10 @@ stages:
       md5: 6f7123cd62871fdc47e0e9eda1f1580d
       size: 2950
     outs:
+    - path: artifacts/data_transformation/preprocessor.joblib
+      hash: md5
+      md5: a434c9cf155323aed0d2f958c7370dba
+      size: 2646
     - path: artifacts/data_transformation/test.csv
       hash: md5
       md5: e2c1d0b589326e300f3660a40661c34b

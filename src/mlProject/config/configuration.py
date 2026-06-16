@@ -98,9 +98,7 @@ class ConfigurationManager:
         use_scaler = os.environ.get(ENV_USE_SCALER, "true").lower() in ("1", "true", "yes")
         scaler_type = os.environ.get(ENV_SCALER_TYPE, params.get("feature_scaling", {}).get("method", "standard"))
 
-        preprocessor_path = config.get("preprocessor_path", None)
-        if preprocessor_path is None:
-            preprocessor_path = Path(config.root_dir) / "preprocessor.joblib"
+        preprocessor_path = Path(config.get("preprocessor_path", str(Path(config.root_dir) / "preprocessor.joblib")))
 
         data_transformation_config = DataTransformationConfig(
             root_dir=Path(root_dir),

@@ -2,6 +2,7 @@ import os
 import joblib
 import numpy as np
 from mlProject import logger
+from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 from sklearn.impute import SimpleImputer
@@ -238,6 +239,7 @@ class DataTransformation:
             preprocessor_path = os.path.join(self.config.root_dir, "preprocessor.joblib")
             joblib.dump(preprocessor, preprocessor_path)
             logger.info(f"Preprocessing pipeline saved to {preprocessor_path}")
+            assert Path(preprocessor_path).exists(), f"Preprocessor not found at {preprocessor_path}"
 
             feat_dim = len(NUMERIC_FEATURES)
             fe_flags = self.config.feature_engineering_flags or {}
