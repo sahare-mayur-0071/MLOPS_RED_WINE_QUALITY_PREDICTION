@@ -187,7 +187,7 @@ def _run_training_in_background() -> None:
         with _log_lock:
             training_log.append("Training started...")
         proc = subprocess.Popen(
-            ["python", "main.py"],
+            [sys.executable, "main.py"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
@@ -238,7 +238,7 @@ def ensure_model_trained() -> None:
         print("Model not found - starting automatic training...")
         try:
             result = subprocess.run(
-                ["python", "main.py"],
+                [sys.executable, "main.py"],
                 capture_output=True,
                 text=True,
                 timeout=300,
