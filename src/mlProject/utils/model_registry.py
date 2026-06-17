@@ -191,7 +191,11 @@ def register_model(
         if len(registry["versions"]) > max_versions_to_keep:
             archived = registry["versions"][max_versions_to_keep:]
             registry["versions"] = registry["versions"][:max_versions_to_keep]
+            protected = {registry.get("production"), registry.get("staging")} - {None}
             for v in archived:
+                if v.get("id") in protected:
+                    logger.info(f"Skipping deletion of protected model {v.get('id')} (active production/staging alias)")
+                    continue
                 archived_path = Path(v["path"])
                 if archived_path.exists():
                     archived_path.unlink()
