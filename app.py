@@ -44,8 +44,13 @@ from mlProject.utils.common import load_env_file, get_env_or_config
 from mlProject.utils.model_registry import load_registry, rollback_to_version
 
 
+@functools.lru_cache(maxsize=1)
 def _get_registry_path() -> Path:
-    """Get the configured model registry path."""
+    """Get the configured model registry path.
+
+    Cached for the process lifetime — the path is derived from immutable
+    config and is resolved on every /health request.
+    """
     try:
         return ConfigurationManager().get_model_registry_config().registry_path
     except Exception:
