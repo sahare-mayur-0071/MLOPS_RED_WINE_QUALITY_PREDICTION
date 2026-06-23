@@ -1,123 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="MLOps Red Wine Quality Prediction application with a quick demo form." />
-    <title>Red Wine Quality Predictor</title>
-    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
-    <link href="static/css/app.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="page-bg" aria-hidden="true"></div>
-    <header class="topbar">
-        <a href="/" class="brand">Red Wine IQ</a>
-        <nav class="menu">
-            <a href="#about">About</a>
-            <a href="#demo">Take Demo</a>
-            <a href="/dashboard" style="background: linear-gradient(135deg, #ff3366, #ff6633); color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; margin-left: 10px; text-decoration: none;">MLOps Dashboard</a>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero container reveal">
-            <p class="badge">MLOps Project</p>
-            <h1>Predict Red Wine Quality With a Production-Style ML Pipeline</h1>
-            <p class="lead">
-                This project uses a complete machine learning workflow: data ingestion, validation, transformation,
-                model training, and evaluation. Enter wine chemistry values and get an instant predicted quality score.
-            </p>
-            <div class="hero-actions">
-                <a class="btn btn-primary" href="#demo">Take Demo</a>
-                <a class="btn btn-ghost" href="#about">How It Works</a>
-            </div>
-        </section>
-
-        <section id="about" class="container about reveal">
-            <h2>What We Built</h2>
-            <div class="cards">
-                <article class="card">
-                    <h3>End-to-End MLOps</h3>
-                    <p>Pipeline stages are orchestrated and reproducible with config-driven components and DVC tracking.</p>
-                </article>
-                <article class="card">
-                    <h3>Reliable Training</h3>
-                    <p>An ElasticNet model is trained on curated wine chemistry features and evaluated using standard metrics.</p>
-                </article>
-                <article class="card">
-                    <h3>Fast Inference</h3>
-                    <p>The Flask app serves predictions with a simple form-based interface suitable for quick demos.</p>
-                </article>
-            </div>
-        </section>
-
-        <section id="demo" class="container demo reveal">
-            <div class="section-head">
-                <h2>Take Demo</h2>
-                <p>Fill all fields with numeric values to get the predicted wine quality score.</p>
-            </div>
-
-            <form class="predict-form" action="/predict" method="post">
-                <label>
-                    Fixed Acidity
-                    <input type="number" name="fixed_acidity" step="any" required />
-                </label>
-                <label>
-                    Volatile Acidity
-                    <input type="number" name="volatile_acidity" step="any" required />
-                </label>
-                <label>
-                    Citric Acid
-                    <input type="number" name="citric_acid" step="any" required />
-                </label>
-                <label>
-                    Residual Sugar
-                    <input type="number" name="residual_sugar" step="any" required />
-                </label>
-                <label>
-                    Chlorides
-                    <input type="number" name="chlorides" step="any" required />
-                </label>
-                <label>
-                    Free Sulfur Dioxide
-                    <input type="number" name="free_sulfur_dioxide" step="any" required />
-                </label>
-                <label>
-                    Total Sulfur Dioxide
-                    <input type="number" name="total_sulfur_dioxide" step="any" required />
-                </label>
-                <label>
-                    Density
-                    <input type="number" name="density" step="any" required />
-                </label>
-                <label>
-                    pH
-                    <input type="number" name="pH" step="any" required />
-                </label>
-                <label>
-                    Sulphates
-                    <input type="number" name="sulphates" step="any" required />
-                </label>
-                <label>
-                    Alcohol
-                    <input type="number" name="alcohol" step="any" required />
-                </label>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-ghost" id="sampleBtn">Use Sample Values</button>
-                    <button type="submit" class="btn btn-primary">Predict Quality</button>
-                </div>
-            </form>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <p>Built for Red Wine Quality Prediction using MLOps principles.</p>
-    </footer>
-
-    <script src="static/js/scripts.js"></script>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-8 max-w-2xl mt-12 bg-white rounded-lg shadow-xl">
+        <h1 class="text-3xl font-bold text-center text-red-800 mb-6">Wine Quality Predictor</h1>
+        <!-- Form elements go here, styled with Tailwind -->
+        <div class="text-center">
+            <button class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded">Predict Quality</button>
+        </div>
+    </div>
 </body>
 </html>
