@@ -1,18 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wine Quality Prediction</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MLOps Red Wine Quality Prediction application with a quick demo form." />
+    <title>Red Wine Quality Predictor</title>
+    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+    <link href="static/css/app.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="container mx-auto p-8 max-w-2xl mt-12 bg-white rounded-lg shadow-xl">
-        <h1 class="text-3xl font-bold text-center text-red-800 mb-6">Wine Quality Predictor</h1>
-        <!-- Form elements go here, styled with Tailwind -->
-        <div class="text-center">
-            <button class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded">Predict Quality</button>
-        </div>
-    </div>
+<body>
+    <a class="skip-link" href="#demo">Skip to demo</a>
+    <div class="page-bg" aria-hidden="true"></div>
+    <header class="topbar">
+        <a href="/" class="brand">Red Wine IQ</a>
+        <nav class="menu" aria-label="Primary">
+            <a href="#about">About</a>
+            <a href="#demo">Take Demo</a>
+            <a href="#batch-demo">Batch Prediction</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero container reveal">
+            <p class="badge">MLOps Project</p>
+            <h1>Predict Red Wine Quality With a Production-Style ML Pipeline</h1>
+            <p class="lead">
+                This project uses a complete machine learning workflow: data ingestion, validation, transformation,
+                model training, and evaluation. Enter wine chemistry values and get an instant predicted quality score.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#demo">Take Demo</a>
+                <a class="btn btn-ghost" href="#about">How It Works</a>
+            </div>
+        </section>
+
+        <section id="about" class="container about reveal">
+            <h2>What We Built</h2>
+            <div class="cards">
+                <article class="card">
+                    <h3>End-to-End MLOps</h3>
+                    <p>Pipeline stages are orchestrated and reproducible with config-driven components and DVC tracking.</p>
+                </article>
+                <article class="card">
+                    <h3>Reliable Training</h3>
+                    <p>An ElasticNet model is trained on curated wine chemistry features and evaluated using standard metrics.</p>
+                </article>
+                <article class="card">
+                    <h3>Fast Inference</h3>
+                    <p>The Flask app serves predictions with a simple form-based interface suitable for quick demos.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="demo" class="container demo reveal">
+            <div class="section-head">
+                <h2>Take Demo</h2>
+                <p>Fill all fields with numeric values to get the predicted wine quality score.</p>
+            </div>
+
+            <form class="predict-form" action="/predict" method="post">
+                <fieldset class="predict-fields">
+                    <legend class="sr-only">Wine chemistry values</legend>
+                    <label for="fixed_acidity">
+                        Fixed Acidity
+                        <input type="number" id="fixed_acidity" name="fixed_acidity" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="volatile_acidity">
+                        Volatile Acidity
+                        <input type="number" id="volatile_acidity" name="volatile_acidity" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="citric_acid">
+                        Citric Acid
+                        <input type="number" id="citric_acid" name="citric_acid" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="residual_sugar">
+                        Residual Sugar
+                        <input type="number" id="residual_sugar" name="residual_sugar" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="chlorides">
+                        Chlorides
+                        <input type="number" id="chlorides" name="chlorides" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="free_sulfur_dioxide">
+                        Free Sulfur Dioxide
+                        <input type="number" id="free_sulfur_dioxide" name="free_sulfur_dioxide" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="total_sulfur_dioxide">
+                        Total Sulfur Dioxide
+                        <input type="number" id="total_sulfur_dioxide" name="total_sulfur_dioxide" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="density">
+                        Density
+                        <input type="number" id="density" name="density" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="pH">
+                        pH
+                        <input type="number" id="pH" name="pH" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="sulphates">
+                        Sulphates
+                        <input type="number" id="sulphates" name="sulphates" step="any" inputmode="decimal" required />
+                    </label>
+                    <label for="alcohol">
+                        Alcohol
+                        <input type="number" id="alcohol" name="alcohol" step="any" inputmode="decimal" required />
+                    </label>
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" id="sampleBtn">Use Sample Values</button>
+                    <button type="submit" class="btn btn-primary">Predict Quality</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="batch-demo" class="container demo reveal">
+            <div class="section-head">
+                <h2>Batch Prediction</h2>
+                <p>Upload a CSV file containing multiple wine records to receive a downloadable file with predicted quality scores appended.</p>
+            </div>
+
+            <form class="predict-form" action="/predict/batch" method="post" enctype="multipart/form-data">
+                <label style="margin-bottom: 2rem;">
+                    Select CSV File
+                    <input type="file" name="file" accept=".csv" required style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); width: 100%; color: inherit;" />
+                </label>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Upload & Predict Batch</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Built for Red Wine Quality Prediction using MLOps principles.</p>
+    </footer>
+
+    <script src="static/js/scripts.js"></script>
 </body>
 </html>
