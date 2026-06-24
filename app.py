@@ -832,7 +832,8 @@ def compare_models():
 @require_admin_token
 def rollback_model():
     """Rollback production alias to a specified version and restore the model file."""
-    version_id = request.json.get("version_id")
+    data = request.get_json(silent=True) or {}
+    version_id = data.get("version_id")
     if not version_id:
         return jsonify({"error": "version_id is required"}), 400
     registry_path = _get_registry_path()
