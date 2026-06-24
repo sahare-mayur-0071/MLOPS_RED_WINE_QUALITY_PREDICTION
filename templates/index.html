@@ -18,7 +18,7 @@
         <nav class="menu">
             <a href="#about">About</a>
             <a href="#demo">Take Demo</a>
-            <a href="/dashboard" style="background: linear-gradient(135deg, #ff3366, #ff6633); color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; margin-left: 10px; text-decoration: none;">MLOps Dashboard</a>
+            <a href="#batch-demo">Batch Prediction</a>
         </nav>
     </header>
 
@@ -109,6 +109,24 @@
                 <div class="form-actions">
                     <button type="button" class="btn btn-ghost" id="sampleBtn">Use Sample Values</button>
                     <button type="submit" class="btn btn-primary">Predict Quality</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="batch-demo" class="container demo reveal">
+            <div class="section-head">
+                <h2>Batch Prediction</h2>
+                <p>Upload a CSV file containing multiple wine records to receive a downloadable file with predicted quality scores appended.</p>
+            </div>
+
+            <form class="predict-form" action="/predict/batch" method="post" enctype="multipart/form-data">
+                <label style="margin-bottom: 2rem;">
+                    Select CSV File
+                    <input type="file" name="file" accept=".csv" required style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); width: 100%; color: inherit;" />
+                </label>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Upload & Predict Batch</button>
                 </div>
             </form>
         </section>

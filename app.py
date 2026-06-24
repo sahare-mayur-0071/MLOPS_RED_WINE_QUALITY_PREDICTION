@@ -28,11 +28,10 @@ import threading
 import time
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
-from urllib.parse import urlparse
+import io
 import numpy as np
 import pandas as pd
-import portalocker
-from flask import Flask, abort, jsonify, render_template, request, g
+from flask import Flask, abort, jsonify, render_template, request, Response, g
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from pathlib import Path
@@ -751,37 +750,51 @@ def index():
         return render_template("index.html")
 
 
-_PREDICT_FIELDS = [
-    "fixed_acidity", "volatile_acidity", "citric_acid", "residual_sugar",
-    "chlorides", "free_sulfur_dioxide", "total_sulfur_dioxide",
-    "density", "pH", "sulphates", "alcohol",
-]
-
-
-@app.route("/api/predict", methods=["POST"])
-@limiter.limit("30 per minute")
-def api_predict():
-    body = request.get_json(silent=True)
-    if not body:
-        return jsonify({"error": "Request body must be JSON"}), 400
-
-    missing = [f for f in _PREDICT_FIELDS if f not in body]
-    if missing:
-        return jsonify({"error": "Missing fields", "fields": missing}), 422
-
+@app.route("/predict/batch", methods=["POST"])
+@limiter.limit("10 per minute")
+def predict_batch():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+        
     try:
-        values = [float(body[f]) for f in _PREDICT_FIELDS]
-    except (TypeError, ValueError) as exc:
-        logger.error(f"Validation error in /api/predict: {exc}")
-        return jsonify({"error": "All fields must be numeric"}), 422
-
-    try:
-        data = np.array(values).reshape(1, 11)
-        prediction = round(float(pipeline.predict(data)[0]), 2)
-        return jsonify({"prediction": prediction})
-    except Exception as exc:
-        logger.error(f"Unexpected error in /api/predict: {exc}")
-        return jsonify({"error": "Prediction failed"}), 500
+        # Read the uploaded CSV file
+        df = pd.read_csv(file)
+        
+        # Keep only the required features, ignoring any target columns if present
+        from mlProject.components.data_transformation import NUMERIC_FEATURES
+        
+        missing_cols = [col for col in NUMERIC_FEATURES if col not in df.columns]
+        if missing_cols:
+            return jsonify({"error": f"Missing required columns: {', '.join(missing_cols)}"}), 400
+            
+        test_x = df[NUMERIC_FEATURES]
+        
+        # Predict
+        predictions = pipeline.predict(test_x)
+        
+        # Append predictions
+        df['predicted_quality'] = np.round(predictions, 2)
+        
+        # Convert back to CSV
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        csv_data = output.getvalue()
+        
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={"Content-Disposition": "attachment;filename=predictions.csv"}
+        )
+        
+    except pd.errors.EmptyDataError:
+        return jsonify({"error": "The uploaded CSV file is empty"}), 400
+    except Exception as e:
+        logger.error(f"Error in /predict/batch: {e}")
+        return jsonify({"error": f"An error occurred processing the file: {str(e)}"}), 500
 
 
 @app.route('/models', methods=['GET'])
