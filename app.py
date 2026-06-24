@@ -66,6 +66,8 @@ def _get_registry_path() -> Path:
 load_env_file()
 
 app = Flask(__name__)
+# Enforce a 5 MB limit on uploaded files to prevent DoS attacks
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 # Request logging middleware for API Gateway Request Analytics
 @app.before_request
