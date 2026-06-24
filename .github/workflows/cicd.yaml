@@ -29,6 +29,10 @@ jobs:
       run: |
         dvc diff --md || echo "No DVC data drift detected"
 
+    - name: Validate issue template filenames
+      run: |
+        python scripts/validate_templates.py
+
     - name: Run tests
       run: |
         python -m pytest tests/ -v
